@@ -1,0 +1,54 @@
+{
+	"schemaVersion": 1,
+	"id": "rise-of-the-villagers",
+	"version": "${version}",
+	"name": "Rise of the Villagers",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/rise-of-the-villagers/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			{
+				"value": "org.solarharmony.RiseOfTheVillagers",
+				"adapter": "kotlin"
+			}
+		],
+		"client": [
+			{
+				"value": "org.solarharmony.RiseOfTheVillagersClient",
+				"adapter": "kotlin"
+			}
+		],
+		"fabric-datagen": [
+			{
+				"value": "org.solarharmony.RiseOfTheVillagersDataGenerator",
+				"adapter": "kotlin"
+			}
+		]
+	},
+	"mixins": [
+		"rise-of-the-villagers.mixins.json",
+		{
+			"config": "rise-of-the-villagers.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.14",
+		"minecraft": "~1.21.7",
+		"java": ">=21",
+		"fabric-api": "*",
+		"fabric-language-kotlin": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
