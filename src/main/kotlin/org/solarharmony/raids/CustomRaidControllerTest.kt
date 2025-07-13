@@ -12,12 +12,17 @@ import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.math.Direction
 import net.minecraft.world.Heightmap
+import org.koin.core.Koin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.solarharmony.utils.plus
 import org.solarharmony.utils.times
 import org.solarharmony.utils.unaryMinus
 import org.solarharmony.utils.with
 
-class CustomRaidControllerTest : CustomRaidController {
+class CustomRaidControllerTest : CustomRaidController, KoinComponent {
+    private val entityRegistry: EntityRegistry by inject()
+
     override fun launch(player: ServerPlayerEntity) {
         val world = player.world
 
@@ -26,8 +31,10 @@ class CustomRaidControllerTest : CustomRaidController {
         val adjustedY = world.getTopY(Heightmap.Type.WORLD_SURFACE, baseSpawnPos.x.toInt(), baseSpawnPos.z.toInt()).toDouble()
         val spawnPos = baseSpawnPos.with(y = adjustedY)
 
+        val entityType = entityRegistry.get(CustomPillagerEntity::class)
+
         for (i in 0 until 10) {
-            val pillager = CustomPillagerEntity.CUSTOM_PILLAGER.create(world, SpawnReason.EVENT)
+            val pillager = entityType.create(world, SpawnReason.EVENT)
                 ?: return
 
             pillager.updatePosition(spawnPos.x, spawnPos.y, spawnPos.z)

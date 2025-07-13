@@ -2,15 +2,22 @@ package org.solarharmony
 
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
+import net.minecraft.entity.attribute.EntityAttributes
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.logger.Level
 import org.slf4j.LoggerFactory
 import org.solarharmony.commands.RiseOfTheVillagersCommand
 import org.solarharmony.raids.CustomPillagerEntity
+import org.solarharmony.raids.EntityRegisterParams
+import org.solarharmony.raids.EntityRegistry
 import org.solarharmony.utils.KoinLogger
 
-object RiseOfTheVillagers : ModInitializer {
+object RiseOfTheVillagers : ModInitializer, KoinComponent {
     private val logger = LoggerFactory.getLogger("rise-of-the-villagers")
+
+	private val entities: EntityRegistry by inject()
 
 	override fun onInitialize() {
 		startKoin {
@@ -18,7 +25,15 @@ object RiseOfTheVillagers : ModInitializer {
 			modules(appModule)
 		}
 
-		CustomPillagerEntity.register()
+		val params = EntityRegisterParams(
+			attributes = {
+				add(EntityAttributes.MAX_HEALTH, 24.0)
+				add(EntityAttributes.MOVEMENT_SPEED, 0.3)
+				add(EntityAttributes.ATTACK_DAMAGE, 5.0)
+				add(EntityAttributes.SCALE, 6.0)
+			}
+		)
+		entities.register(CustomPillagerEntity::class, "custom_pillager", params)
 
 		CommandRegistrationCallback.EVENT.register(RiseOfTheVillagersCommand::register);
 
