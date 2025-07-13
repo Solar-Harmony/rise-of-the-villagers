@@ -6,6 +6,7 @@ import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.logger.Level
 import org.slf4j.LoggerFactory
 import org.solarharmony.commands.RiseOfTheVillagersCommand
+import org.solarharmony.raids.CustomPillagerEntity
 import org.solarharmony.utils.KoinLogger
 
 object RiseOfTheVillagers : ModInitializer {
@@ -16,6 +17,8 @@ object RiseOfTheVillagers : ModInitializer {
 			logger(KoinLogger(logger, Level.INFO))
 			modules(appModule)
 		}
+
+		CustomPillagerEntity.register()
 
 		CommandRegistrationCallback.EVENT.register(RiseOfTheVillagersCommand::register);
 

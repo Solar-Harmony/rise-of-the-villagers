@@ -27,7 +27,12 @@ object RiseOfTheVillagersCommand : KoinComponent {
                             false
                         )
 
-                        raid.launch(ctx.source.playerOrThrow)
+                        try {
+                            raid.launch(ctx.source.playerOrThrow)
+                        } catch (e: Exception) {
+                            ctx.source.sendError(Text.literal("Failed to start raid: ${e.message}"))
+                            return@executes 0
+                        }
                         1
                     }
                 )
