@@ -1,15 +1,12 @@
 package org.solarharmony
 
 import org.koin.dsl.module
-import org.solarharmony.service.VillagerService
-import org.solarharmony.service.VillagerServiceImpl
+import org.solarharmony.entities.registry.EntityRegistry
+import org.solarharmony.entities.registry.EntityRegistryImpl
+import org.solarharmony.siege.SiegeController
+import org.solarharmony.siege.SiegeControllerTest
 
 val appModule = module {
-    // Register VillagerService as a singleton
-    single<VillagerService> { VillagerServiceImpl() }
-
-    // Add more dependencies here as needed
-    // Example patterns:
-    // single<SomeService> { SomeServiceImpl() }  // Singleton
-    // factory<SomeRepository> { SomeRepositoryImpl() }  // New instance each time
+    single<SiegeController> { SiegeControllerTest() }
+    single<EntityRegistry> { EntityRegistryImpl() }
 }
