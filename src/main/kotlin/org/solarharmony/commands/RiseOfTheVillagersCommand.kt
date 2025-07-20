@@ -8,10 +8,17 @@ import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.text.Text
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.solarharmony.raids.CustomRaidController
+import org.solarharmony.siege.SiegeController
+import org.solarharmony.siege.SiegeParameters
 
+/**
+ * Our main command for testing stuff in the game.
+ *
+ * Start a test raid:
+ * /arisevillagers raid start
+ */
 object RiseOfTheVillagersCommand : KoinComponent {
-    private val raid: CustomRaidController by inject()
+    private val raid: SiegeController by inject()
 
     fun register(
         dispatcher: CommandDispatcher<ServerCommandSource>,
@@ -28,7 +35,12 @@ object RiseOfTheVillagersCommand : KoinComponent {
                         )
 
                         try {
-                            raid.launch(ctx.source.playerOrThrow)
+                            raid.launch(ctx.source.playerOrThrow,
+                                SiegeParameters(
+                                    pillagerCount = 10,
+                                    spawnDistance = 50.0
+                                )
+                            )
                         } catch (e: Exception) {
                             ctx.source.sendError(Text.literal("Failed to start raid: ${e.message}"))
                             return@executes 0

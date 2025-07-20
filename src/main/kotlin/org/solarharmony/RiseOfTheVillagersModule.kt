@@ -1,12 +1,12 @@
 package org.solarharmony
 
 import org.koin.dsl.module
-import org.solarharmony.raids.CustomRaidController
-import org.solarharmony.raids.CustomRaidControllerTest
-import org.solarharmony.raids.EntityRegistry
-import org.solarharmony.raids.EntityRegistryImpl
+import org.solarharmony.entities.registry.EntityRegistry
+import org.solarharmony.entities.registry.EntityRegistryImpl
+import org.solarharmony.siege.SiegeController
+import org.solarharmony.siege.SiegeControllerTest
 
 val appModule = module {
-    single<CustomRaidController> { CustomRaidControllerTest() }
+    single<SiegeController> { SiegeControllerTest() }
     single<EntityRegistry> { EntityRegistryImpl() }
 }

@@ -9,9 +9,9 @@ import org.koin.core.context.GlobalContext.startKoin
 import org.koin.core.logger.Level
 import org.slf4j.LoggerFactory
 import org.solarharmony.commands.RiseOfTheVillagersCommand
-import org.solarharmony.raids.CustomPillagerEntity
-import org.solarharmony.raids.EntityRegisterParams
-import org.solarharmony.raids.EntityRegistry
+import org.solarharmony.entities.registry.EntityRegisterParams
+import org.solarharmony.entities.registry.EntityRegistry
+import org.solarharmony.entities.CustomPillagerEntity
 import org.solarharmony.utils.KoinLogger
 
 object RiseOfTheVillagers : ModInitializer, KoinComponent {
@@ -30,7 +30,6 @@ object RiseOfTheVillagers : ModInitializer, KoinComponent {
 				add(EntityAttributes.MAX_HEALTH, 24.0)
 				add(EntityAttributes.MOVEMENT_SPEED, 0.3)
 				add(EntityAttributes.ATTACK_DAMAGE, 5.0)
-				add(EntityAttributes.SCALE, 6.0)
 			}
 		)
 		entities.register(CustomPillagerEntity::class, "custom_pillager", params)

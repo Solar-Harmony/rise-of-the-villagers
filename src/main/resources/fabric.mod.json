@@ -3,9 +3,10 @@
 	"id": "rise-of-the-villagers",
 	"version": "${version}",
 	"name": "Rise of the Villagers",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Overhaul of villager sieges",
 	"authors": [
-		"Me!"
+		"Thuri",
+		"Hendrick"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
