@@ -41,8 +41,8 @@ class CustomPillagerEntity(type: EntityType<out PillagerEntity>, world: World) :
 
         // turns out spawned pillagers are actually neutral, unless spawned from a raid, outpost or woodland mansion
         this.targetSelector.add(2, ActiveTargetGoal(this, IronGolemEntity::class.java, true))
-        this.targetSelector.add(3, ActiveTargetGoal(this, VillagerEntity::class.java, true))
-        this.targetSelector.add(4, ActiveTargetGoal(this, ServerPlayerEntity::class.java, true))
+        this.targetSelector.add(4, ActiveTargetGoal(this, VillagerEntity::class.java, true))
+        this.targetSelector.add(3, ActiveTargetGoal(this, ServerPlayerEntity::class.java, true))
     }
 
 
