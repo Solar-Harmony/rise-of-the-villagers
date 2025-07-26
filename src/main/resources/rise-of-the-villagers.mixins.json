@@ -3,7 +3,9 @@
 	"package": "org.solarharmony.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ExampleMixin"
+		"ExampleMixin",
+		"PillagerEntityMixin",
+		"PillagerEntityRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

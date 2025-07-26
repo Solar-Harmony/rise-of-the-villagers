@@ -40,6 +40,9 @@ class SiegeControllerTest : SiegeController, KoinComponent {
 
             pillager.updatePosition(spawnPos.x + offset, spawnPos.y + offset, spawnPos.z)
             pillager.equipStack(EquipmentSlot.MAINHAND, ItemStack(Items.IRON_SWORD))
+            pillager.equipStack(EquipmentSlot.HEAD, ItemStack(Items.IRON_HELMET))
+            pillager.setEquipmentDropChance(EquipmentSlot.HEAD, 0.0f)
+            pillager.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0f)
             pillager.initialize(world, world.getLocalDifficulty(pillager.blockPos), SpawnReason.EVENT, null)
             world.spawnEntity(pillager)
         }

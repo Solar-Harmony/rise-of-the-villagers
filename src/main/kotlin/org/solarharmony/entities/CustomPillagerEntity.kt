@@ -20,6 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.world.LocalDifficulty
 import net.minecraft.world.ServerWorldAccess
 import net.minecraft.world.World
+import java.util.Random
 
 /**
  * Custom pillager entity that can be either a footman or a mounted pillager.
@@ -29,6 +30,9 @@ class CustomPillagerEntity(type: EntityType<out PillagerEntity>, world: World) :
     private var horseMount: HorseEntity? = null
 
     private val isFootman = this.random.nextBoolean()
+
+
+
 
     override fun initGoals() {
         super.initGoals()
@@ -46,17 +50,32 @@ class CustomPillagerEntity(type: EntityType<out PillagerEntity>, world: World) :
     }
 
 
-    override fun initialize(world: ServerWorldAccess, difficulty: LocalDifficulty, spawnReason: SpawnReason, entityData: EntityData?): EntityData? {
+    override fun initialize(
+        world: ServerWorldAccess,
+        difficulty: LocalDifficulty,
+        spawnReason: SpawnReason,
+        entityData: EntityData?
+    ): EntityData? {
+        // 1) Do all the vanilla setup first
         val result = super.initialize(world, difficulty, spawnReason, entityData)
 
+        // 2) Footman vs. mounted logic
         if (vehicle == null && isFootman) {
             this.equipStack(EquipmentSlot.MAINHAND, ItemStack(Items.IRON_SWORD))
         } else {
             spawnHorseMount()
         }
 
+        // 3) Helmet logic: give every custom pillager an iron helmet
+        this.equipStack(EquipmentSlot.HEAD, ItemStack(Items.IRON_HELMET))
+        this.setEquipmentDropChance(EquipmentSlot.HEAD, 0.0f)
+
+        // 4) (Optional) allow them to pick up armor off the ground:
+        // this.setCanPickUpLoot(true)
+
         return result
     }
+
 
     /**
      * Experimental: gives pillagers a horse mount.

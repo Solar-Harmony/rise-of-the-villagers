@@ -37,7 +37,7 @@ object RiseOfTheVillagersCommand : KoinComponent {
                         try {
                             raid.launch(ctx.source.playerOrThrow,
                                 SiegeParameters(
-                                    pillagerCount = 10,
+                                    pillagerCount = 100,
                                     spawnDistance = 50.0
                                 )
                             )
