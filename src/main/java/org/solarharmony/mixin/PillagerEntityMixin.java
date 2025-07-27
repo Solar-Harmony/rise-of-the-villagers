@@ -52,5 +52,6 @@ public abstract class PillagerEntityMixin {
                 System.out.println("DEBUG: PILLAGER HAS NO HELMET!");
             }
         });
-    } //helmet 100% works, but not rendered in the game so fuckmy life
+    } //helmet 100% works, but not rendered in the game so fuckmy life //FIXME fuck my life
+    //FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life//FIXME fuck my life
 }
