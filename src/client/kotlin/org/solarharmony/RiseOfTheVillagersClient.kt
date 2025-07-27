@@ -23,7 +23,7 @@ object RiseOfTheVillagersClient : ClientModInitializer, KoinComponent {
 		val entityType = entityRegistry.get(CustomPillagerEntity::class)
 
 		EntityRendererRegistry.register(entityType) { ctx ->
-			PillagerEntityRenderer(ctx)
+			NingNongEntityRenderer(ctx)
 		}
 	}
 }

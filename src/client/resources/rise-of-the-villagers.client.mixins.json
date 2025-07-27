@@ -3,6 +3,7 @@
 	"package": "org.solarharmony.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
+		"PillagerEntityRendererMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
