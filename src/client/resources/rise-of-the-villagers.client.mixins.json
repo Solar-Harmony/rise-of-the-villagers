@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "org.solarharmony.mixin.client",
+	"package": "renderer",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
 		"PillagerEntityRendererMixin"
