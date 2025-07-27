@@ -3,14 +3,10 @@ package entityrenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.PillagerEntityRenderer;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.client.render.entity.model.IllagerEntityModel;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.entity.LivingEntity;
 
 import java.lang.reflect.Method;
 
@@ -27,8 +23,8 @@ public class NingNongEntityRenderer extends PillagerEntityRenderer {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void addArmorLayerTo(PillagerEntityRenderer renderer, EntityRendererFactory.Context ctx) {
         // Get the baked ModelPart for armor
-        var innerModel = new BipedEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER_INNER_ARMOR));
-        var outerModel = new BipedEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER_OUTER_ARMOR));
+        var innerModel = new IllagerEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER_INNER_ARMOR));
+        var outerModel = new IllagerEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER_OUTER_ARMOR));
 
         // Create the armor feature renderer
         // Using unchecked casts to match the expected types
