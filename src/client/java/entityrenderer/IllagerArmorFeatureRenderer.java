@@ -7,14 +7,12 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.IllagerEntityModel;
 import net.minecraft.client.render.entity.state.IllagerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -22,9 +20,9 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRenderState, IllagerEntityModel<IllagerEntityRenderState>> {
 
+    // Use Identifier.of() instead of the constructor
     private static final Identifier ARMOR_TEXTURE = Identifier.of("minecraft", "textures/models/armor/iron_layer_1.png");
 
-    private final FeatureRendererContext<IllagerEntityRenderState, IllagerEntityModel<IllagerEntityRenderState>> rendererContext;
     private final BipedEntityModel<?> innerArmorModel;
     private final BipedEntityModel<?> outerArmorModel;
 
@@ -33,7 +31,6 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
             BipedEntityModel<?> innerArmorModel,
             BipedEntityModel<?> outerArmorModel) {
         super(context);
-        this.rendererContext = context;
         this.innerArmorModel = innerArmorModel;
         this.outerArmorModel = outerArmorModel;
     }
@@ -43,106 +40,60 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
                        IllagerEntityRenderState state, float limbAngle, float limbDistance) {
         System.out.println("DEBUG: IllagerArmorFeatureRenderer.render() called.");
 
+        // We need to get the entity somehow
+        IllagerEntity entity = null;
 
-        if (!(state instanceof IllagerArmorRenderState armorState)) {
-            return; // No armor state
+        // Try to get entity from our custom state if possible
+        if (state instanceof IllagerArmorRenderState armorState) {
+            entity = armorState.entity;
+            System.out.println("DEBUG: Got entity from IllagerArmorRenderState");
         }
 
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) continue;
-
-            ItemStack itemStack = switch (slot) {
-                case HEAD -> armorState.headArmor;
-                case CHEST -> armorState.bodyArmor;
-                case LEGS -> armorState.legArmor;
-                case FEET -> armorState.feetArmor;
-                default -> ItemStack.EMPTY;
-            };
-
-            if (itemStack.isEmpty()) continue;
-
-            BipedEntityModel<?> armorModel = (slot == EquipmentSlot.LEGS) ? innerArmorModel : outerArmorModel;
-            setArmorPartVisibility(armorModel, slot);
-
-            renderArmorPiece(this.rendererContext, matrices, vertexConsumers, light, itemStack, armorModel, slot);
-        }
-    }
-
-
-
-
-
-
-    private void copyStateToModel(IllagerEntityRenderState state, BipedEntityModel<?> model) {
-        if (state.attacking) {
-            model.rightArm.pitch = -1.5F;
-            model.leftArm.pitch = -1.5F;
+        // If we have an entity, check its equipment
+        if (entity != null) {
+            ItemStack headStack = entity.getEquippedStack(EquipmentSlot.HEAD);
+            if (!headStack.isEmpty()) {
+                System.out.println("DEBUG: Entity has helmet: " + headStack.getItem());
+                renderHelmet(matrices, vertexConsumers, light, headStack);
+            }
         } else {
-            model.rightArm.pitch = 0.0F;
-            model.leftArm.pitch = 0.0F;
+            System.out.println("DEBUG: No entity found in render state");
         }
     }
 
-    private void setArmorPartVisibility(BipedEntityModel<?> model, EquipmentSlot slot) {
+    private void renderHelmet(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, ItemStack stack) {
+        // Use the outer armor model for helmet
+        BipedEntityModel<?> model = outerArmorModel;
+
+        // Only show head parts
         model.setVisible(false);
-        switch (slot) {
-            case HEAD:
-                model.head.visible = true;
-                model.hat.visible = true;
-                break;
-            case CHEST:
-                model.body.visible = true;
-                model.rightArm.visible = true;
-                model.leftArm.visible = true;
-                break;
-            case LEGS:
-                model.body.visible = true;
-                model.rightLeg.visible = true;
-                model.leftLeg.visible = true;
-                break;
-            case FEET:
-                model.rightLeg.visible = true;
-                model.leftLeg.visible = true;
-                break;
-            default:
-                break;
-        }
+        model.head.visible = true;
+        model.hat.visible = true;
+
+        // Copy head rotation from parent model
+        IllagerEntityModel<?> parentModel = this.getContextModel();
+        model.head.copyTransform(parentModel.getHead());
+        model.hat.copyTransform(parentModel.getHead());
+
+        // Render the helmet
+        Identifier texture = getArmorTexture(stack);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(texture));
+
+        // Fix the render method call to match what your version expects
+        model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
     }
 
-    private Identifier getArmorTexture(ItemStack stack, EquipmentSlot slot) {
-        String layer = slot == EquipmentSlot.LEGS ? "2" : "1";
+    private Identifier getArmorTexture(ItemStack stack) {
         String material = "iron";
-
         String itemName = stack.getItem().toString();
+
         if (itemName.contains("diamond")) material = "diamond";
         else if (itemName.contains("netherite")) material = "netherite";
         else if (itemName.contains("gold")) material = "gold";
         else if (itemName.contains("leather")) material = "leather";
         else if (itemName.contains("chainmail")) material = "chainmail";
 
-        Identifier texture = Identifier.of("minecraft", "textures/models/armor/" + material + "_layer_" + layer + ".png");
-        System.out.println("DEBUG: getArmorTexture() -> " + texture);
-        return texture;
-    }
-
-    private void renderArmorPiece(
-            FeatureRendererContext<?, ? extends EntityModel<?>> context,
-            MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers,
-            int light,
-            ItemStack stack,
-            BipedEntityModel<?> model,
-            EquipmentSlot slot) {
-
-        if (stack.isEmpty()) {
-            System.out.println("DEBUG: Skipping empty armor stack for slot " + slot);
-            return;
-        }
-
-        Identifier texture = getArmorTexture(stack, slot);
-        System.out.println("DEBUG: renderArmorPiece() rendering slot " + slot + " with " + texture);
-
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(texture));
-        model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
+        // Use Identifier.of() instead of constructor
+        return Identifier.of("minecraft", "textures/models/armor/" + material + "_layer_1.png");
     }
 }
