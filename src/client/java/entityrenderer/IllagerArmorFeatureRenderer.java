@@ -14,6 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -42,22 +43,21 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
                        IllagerEntityRenderState state, float limbAngle, float limbDistance) {
         System.out.println("DEBUG: IllagerArmorFeatureRenderer.render() called.");
 
-        // Copy state from illager model to armor models
-        copyStateToModel(state, this.innerArmorModel);
-        copyStateToModel(state, this.outerArmorModel);
+
+        if (!(state instanceof IllagerArmorRenderState armorState)) {
+            return; // No armor state
+        }
 
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) continue;
 
             ItemStack itemStack = switch (slot) {
-                case HEAD -> state.headArmor;
-                case CHEST -> state.bodyArmor;
-                case LEGS -> state.legArmor;
-                case FEET -> state.feetArmor;
+                case HEAD -> armorState.headArmor;
+                case CHEST -> armorState.bodyArmor;
+                case LEGS -> armorState.legArmor;
+                case FEET -> armorState.feetArmor;
                 default -> ItemStack.EMPTY;
             };
-
-            System.out.println("DEBUG: Checking slot " + slot + " -> " + itemStack);
 
             if (itemStack.isEmpty()) continue;
 
@@ -66,12 +66,12 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
 
             renderArmorPiece(this.rendererContext, matrices, vertexConsumers, light, itemStack, armorModel, slot);
         }
-
-
-
-
-
     }
+
+
+
+
+
 
     private void copyStateToModel(IllagerEntityRenderState state, BipedEntityModel<?> model) {
         if (state.attacking) {

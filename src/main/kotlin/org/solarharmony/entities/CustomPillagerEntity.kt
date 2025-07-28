@@ -27,28 +27,27 @@ import java.util.Random
  * Footmen use melee attacks, while mounted pillagers use crossbows.
  */
 class CustomPillagerEntity(type: EntityType<out PillagerEntity>, world: World) : PillagerEntity(type, world) {
-    private var horseMount: HorseEntity? = null
 
+    private var horseMount: HorseEntity? = null
     private val isFootman = this.random.nextBoolean()
 
-
-
+    init {
+        println("DEBUG: CustomPillagerEntity constructor CALLED!") // Constructor debug
+    }
 
     override fun initGoals() {
         super.initGoals()
+        println("DEBUG: initGoals() for CustomPillagerEntity") // Debug here
 
-        // FIXME: footmen can't attack
         if (isFootman) {
             this.goalSelector.clear { it is CrossbowAttackGoal<*> }
             this.goalSelector.add(2, MeleeAttackGoal(this, 1.2, true))
         }
 
-        // turns out spawned pillagers are actually neutral, unless spawned from a raid, outpost or woodland mansion
         this.targetSelector.add(2, ActiveTargetGoal(this, IronGolemEntity::class.java, true))
         this.targetSelector.add(4, ActiveTargetGoal(this, VillagerEntity::class.java, true))
         this.targetSelector.add(3, ActiveTargetGoal(this, ServerPlayerEntity::class.java, true))
     }
-
 
     override fun initialize(
         world: ServerWorldAccess,
@@ -56,22 +55,26 @@ class CustomPillagerEntity(type: EntityType<out PillagerEntity>, world: World) :
         spawnReason: SpawnReason,
         entityData: EntityData?
     ): EntityData? {
-        // 1) Do all the vanilla setup first
+        println("DEBUG: initialize() CALLED for CustomPillagerEntity") // Debug here
+
         val result = super.initialize(world, difficulty, spawnReason, entityData)
 
-        // 2) Footman vs. mounted logic
         if (vehicle == null && isFootman) {
             this.equipStack(EquipmentSlot.MAINHAND, ItemStack(Items.IRON_SWORD))
         } else {
             spawnHorseMount()
         }
 
-        // 3) Helmet logic: give every custom pillager an iron helmet
-        this.equipStack(EquipmentSlot.HEAD, ItemStack(Items.IRON_HELMET))
+        val helmet = ItemStack(Items.IRON_HELMET)
+        this.equipStack(EquipmentSlot.HEAD, helmet)
         this.setEquipmentDropChance(EquipmentSlot.HEAD, 0.0f)
 
-        // 4) (Optional) allow them to pick up armor off the ground:
-        // this.setCanPickUpLoot(true)
+        val equippedHelmet = this.getEquippedStack(EquipmentSlot.HEAD)
+        if (!equippedHelmet.isEmpty && equippedHelmet.item == Items.IRON_HELMET) {
+            println("DEBUG: CustomPillagerEntity successfully equipped with IRON_HELMET.")
+        } else {
+            println("DEBUG: CustomPillagerEntity failed to equip IRON_HELMET!")
+        }
 
         return result
     }

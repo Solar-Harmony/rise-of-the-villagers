@@ -16,6 +16,11 @@ public class NingNongEntityRenderer extends PillagerEntityRenderer {
     public NingNongEntityRenderer(EntityRendererFactory.Context context) {
         super(context);
     }
+    @Override
+    public IllagerEntityRenderState createRenderState() {
+        return new IllagerArmorRenderState();
+    }
+
 
     /**
      * Static utility method that can be called from the renderer.PillagerEntityRendererMixin
