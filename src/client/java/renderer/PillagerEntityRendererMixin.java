@@ -19,6 +19,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PillagerEntityRenderer.class)
 public abstract class PillagerEntityRendererMixin {
 
+    // Static initializer to verify the class is loaded
+    static {
+        System.out.println("DEBUG: PillagerEntityRendererMixin class loaded!");
+    }
+
     @Inject(
             method = "<init>(Lnet/minecraft/client/render/entity/EntityRendererFactory$Context;)V",
             at = @At("RETURN")
@@ -26,21 +31,20 @@ public abstract class PillagerEntityRendererMixin {
     private void addArmorLayer(EntityRendererFactory.Context ctx, CallbackInfo ci) {
         System.out.println("DEBUG: PillagerEntityRendererMixin.addArmorLayer() called.");
 
-        // Cast `this` to the feature renderer context
-        FeatureRendererContext<IllagerEntityRenderState, IllagerEntityModel<IllagerEntityRenderState>> context =
-                (FeatureRendererContext<IllagerEntityRenderState, IllagerEntityModel<IllagerEntityRenderState>>)(Object)this;
-
-        // Create and add our custom armor renderer
-        IllagerArmorFeatureRenderer armorRenderer = new IllagerArmorFeatureRenderer(
-                context,
-                new BipedEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER_INNER_ARMOR)),
-                new BipedEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER_OUTER_ARMOR))
-        );
-
-        // Use reflection to add the feature renderer
         try {
-            java.lang.reflect.Method addFeatureMethod = PillagerEntityRenderer.class
-                    .getDeclaredMethod("addFeature", net.minecraft.client.render.entity.feature.FeatureRenderer.class);
+            // Create the feature renderer
+            IllagerArmorFeatureRenderer armorRenderer = new IllagerArmorFeatureRenderer(
+                    (FeatureRendererContext) this,
+                    new BipedEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER_INNER_ARMOR)),
+                    new BipedEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER_OUTER_ARMOR))
+            );
+
+            // Try to find the method in the LivingEntityRenderer class which PillagerEntityRenderer extends
+            java.lang.reflect.Method addFeatureMethod =
+                    net.minecraft.client.render.entity.LivingEntityRenderer.class
+                            .getDeclaredMethod("addFeature",
+                                    net.minecraft.client.render.entity.feature.FeatureRenderer.class);
+
             addFeatureMethod.setAccessible(true);
             addFeatureMethod.invoke(this, armorRenderer);
             System.out.println("DEBUG: Successfully added armor feature renderer");
