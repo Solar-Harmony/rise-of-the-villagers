@@ -3,10 +3,12 @@ package entityrenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.PillagerEntityRenderer;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
+import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.IllagerEntityModel;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
+import net.minecraft.client.render.entity.state.IllagerEntityRenderState;
 
 import java.lang.reflect.Method;
 
@@ -28,12 +30,13 @@ public class NingNongEntityRenderer extends PillagerEntityRenderer {
 
         // Create the armor feature renderer
         // Using unchecked casts to match the expected types
-        FeatureRenderer armorFeature = new ArmorFeatureRenderer(
-                (FeatureRendererContext)renderer,
-                innerModel, // assuming this is an IllagerEntityModel instance
-                outerModel, // assuming this is an IllagerEntityModel instance
-                ctx.getEquipmentRenderer()
+        FeatureRenderer armorFeature = new IllagerArmorFeatureRenderer(
+                (FeatureRendererContext<IllagerEntityRenderState, IllagerEntityModel<IllagerEntityRenderState>>) renderer,
+                new BipedEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER_INNER_ARMOR)),
+                new BipedEntityModel<>(ctx.getPart(EntityModelLayers.PLAYER_OUTER_ARMOR))
         );
+
+;
 
         // Use reflection to access the protected method
         try {

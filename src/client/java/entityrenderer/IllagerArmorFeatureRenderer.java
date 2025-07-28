@@ -11,13 +11,10 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.IllagerEntityModel;
 import net.minecraft.client.render.entity.state.IllagerEntityRenderState;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.IllagerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -27,6 +24,7 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
 
     private static final Identifier ARMOR_TEXTURE = Identifier.of("minecraft", "textures/models/armor/iron_layer_1.png");
 
+    private final FeatureRendererContext<IllagerEntityRenderState, IllagerEntityModel<IllagerEntityRenderState>> rendererContext;
     private final BipedEntityModel<?> innerArmorModel;
     private final BipedEntityModel<?> outerArmorModel;
 
@@ -35,6 +33,7 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
             BipedEntityModel<?> innerArmorModel,
             BipedEntityModel<?> outerArmorModel) {
         super(context);
+        this.rendererContext = context;
         this.innerArmorModel = innerArmorModel;
         this.outerArmorModel = outerArmorModel;
     }
@@ -46,8 +45,6 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
         copyStateToModel(state, this.innerArmorModel);
         copyStateToModel(state, this.outerArmorModel);
 
-        // Get the corresponding IllagerEntity from the state
-        // This would need to be adapted based on how your state system works
         IllagerEntity illager = getIllagerEntityFromState(state);
         if (illager == null) return;
 
@@ -62,30 +59,12 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
 
             setArmorPartVisibility(armorModel, slot);
 
-            renderArmorPiece(this.getContext(), matrices, vertexConsumers, light, itemStack, armorModel, slot);
+            renderArmorPiece(this.rendererContext, matrices, vertexConsumers, light, itemStack, armorModel, slot);
         }
-
-
-
-        BipedEntityModel<IllagerEntityRenderState> model = slot == EquipmentSlot.LEGS ?
-                this.innerArmorModel : this.outerArmorModel;
-
-        // Set visibility based on slot
-        setArmorPartVisibility(model, slot);
-
-        // Get proper texture for the armor
-        Identifier texture = getArmorTexture(armorItem, slot);
-
-        // Render the armor piece
-        renderArmorPiece(matrices, vertexConsumers, light, illager, limbAngle,
-                limbDistance, model, texture);
     }
 
     private void copyStateToModel(IllagerEntityRenderState state, BipedEntityModel<?> model) {
-        // Instead of setting handSwingProgress or riding on the model,
-        // we directly configure the ModelPart rotations here if needed.
         if (state.attacking) {
-            // Example: attack pose
             model.rightArm.pitch = -1.5F;
             model.leftArm.pitch = -1.5F;
         } else {
@@ -120,24 +99,14 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
         }
     }
 
-
-    // Helper method to get illager entity from state
-    // This would need to be implemented based on your system
     private IllagerEntity getIllagerEntityFromState(IllagerEntityRenderState state) {
-        // This is a placeholder - you would need to implement this
-        // based on how your rendering system works
-        return null;
+        return null; // Placeholder
     }
 
-    // Helper method to get armor texture
     private Identifier getArmorTexture(ItemStack stack, EquipmentSlot slot) {
-        // Default texture layer
         String layer = slot == EquipmentSlot.LEGS ? "2" : "1";
-
-        // Default material
         String material = "iron";
 
-        // Get item name (ID)
         String itemName = stack.getItem().toString();
         if (itemName.contains("diamond")) material = "diamond";
         else if (itemName.contains("netherite")) material = "netherite";
@@ -146,10 +115,8 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
         else if (itemName.contains("chainmail")) material = "chainmail";
 
         return Identifier.of("minecraft", "textures/models/armor/" + material + "_layer_" + layer + ".png");
-
     }
 
-    // Helper method to render armor piece
     private void renderArmorPiece(
             FeatureRendererContext<?, ? extends EntityModel<?>> context,
             MatrixStack matrices,
@@ -161,12 +128,8 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
 
         if (stack.isEmpty()) return;
 
-        // Bind the texture of the armor
         Identifier texture = getArmorTexture(stack, slot);
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(texture));
-
-        // Render the armor model
         model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
     }
-
 }
