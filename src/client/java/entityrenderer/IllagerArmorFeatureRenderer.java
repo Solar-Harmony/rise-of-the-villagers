@@ -22,13 +22,13 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
 
     private static final Identifier ARMOR_TEXTURE = new Identifier("textures/models/armor/iron_layer_1.png");
 
-    private final BipedEntityModel<IllagerEntityRenderState> innerArmorModel;
-    private final BipedEntityModel<IllagerEntityRenderState> outerArmorModel;
+    private final BipedEntityModel<?> innerArmorModel;
+    private final BipedEntityModel<?> outerArmorModel;
 
     public IllagerArmorFeatureRenderer(
             FeatureRendererContext<IllagerEntityRenderState, IllagerEntityModel<IllagerEntityRenderState>> context,
-            BipedEntityModel<IllagerEntityRenderState> innerArmorModel,
-            BipedEntityModel<IllagerEntityRenderState> outerArmorModel) {
+            BipedEntityModel<?> innerArmorModel,
+            BipedEntityModel<?> outerArmorModel) {
         super(context);
         this.innerArmorModel = innerArmorModel;
         this.outerArmorModel = outerArmorModel;
@@ -71,21 +71,20 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
         }
     }
 
-    private void copyStateToModel(IllagerEntityRenderState state, BipedEntityModel<IllagerEntityRenderState> model) {
-        // Update armor model with illager animation state
-        model.handSwingProgress = state.handSwingProgress;
-        model.riding = state.hasVehicle;
-        model.child = false;
-
-        // Set arm pose based on state
+    private void copyStateToModel(IllagerEntityRenderState state, BipedEntityModel<?> model) {
+        // Instead of setting handSwingProgress or riding on the model,
+        // we directly configure the ModelPart rotations here if needed.
         if (state.attacking) {
-            model.rightArmPose = BipedEntityModel.ArmPose.ATTACK;
-            model.leftArmPose = BipedEntityModel.ArmPose.ATTACK;
+            // Example: attack pose
+            model.rightArm.pitch = -1.5F;
+            model.leftArm.pitch = -1.5F;
         } else {
-            model.rightArmPose = BipedEntityModel.ArmPose.EMPTY;
-            model.leftArmPose = BipedEntityModel.ArmPose.EMPTY;
+            model.rightArm.pitch = 0.0F;
+            model.leftArm.pitch = 0.0F;
         }
     }
+
+
 
     private void setArmorPartVisibility(BipedEntityModel<IllagerEntityRenderState> model, EquipmentSlot slot) {
         model.setVisible(false);
@@ -136,5 +135,7 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
         model.render(matrices, vertexConsumers.getBuffer(model.getLayer(texture)),
                 light, ItemRenderer.getItemGlintConsumer(vertexConsumers, model.getLayer(texture),
                         false, false), 1.0F, 1.0F, 1.0F, 1.0F);
+
+
     }
 }
