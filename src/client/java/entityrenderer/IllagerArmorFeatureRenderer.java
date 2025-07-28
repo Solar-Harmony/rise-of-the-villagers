@@ -41,17 +41,24 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light,
                        IllagerEntityRenderState state, float limbAngle, float limbDistance) {
+        System.out.println("DEBUG: IllagerArmorFeatureRenderer.render() called.");
+
         // Copy state from illager model to armor models
         copyStateToModel(state, this.innerArmorModel);
         copyStateToModel(state, this.outerArmorModel);
 
         IllagerEntity illager = getIllagerEntityFromState(state);
-        if (illager == null) return;
+        if (illager == null) {
+            System.out.println("DEBUG: IllagerEntity is null in getIllagerEntityFromState().");
+            return;
+        }
 
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) continue;
 
             ItemStack itemStack = illager.getEquippedStack(slot);
+            System.out.println("DEBUG: Checking slot " + slot + " -> " + itemStack);
+
             if (itemStack.isEmpty()) continue;
 
             BipedEntityModel<?> armorModel =
@@ -59,6 +66,7 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
 
             setArmorPartVisibility(armorModel, slot);
 
+            System.out.println("DEBUG: Rendering armor for slot " + slot + " with texture: " + getArmorTexture(itemStack, slot));
             renderArmorPiece(this.rendererContext, matrices, vertexConsumers, light, itemStack, armorModel, slot);
         }
     }
@@ -100,7 +108,9 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
     }
 
     private IllagerEntity getIllagerEntityFromState(IllagerEntityRenderState state) {
-        return null; // Placeholder
+        // TODO: Implement this method correctly. For now, debug
+        System.out.println("DEBUG: getIllagerEntityFromState() called - currently returns null.");
+        return null;
     }
 
     private Identifier getArmorTexture(ItemStack stack, EquipmentSlot slot) {
@@ -114,7 +124,9 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
         else if (itemName.contains("leather")) material = "leather";
         else if (itemName.contains("chainmail")) material = "chainmail";
 
-        return Identifier.of("minecraft", "textures/models/armor/" + material + "_layer_" + layer + ".png");
+        Identifier texture = Identifier.of("minecraft", "textures/models/armor/" + material + "_layer_" + layer + ".png");
+        System.out.println("DEBUG: getArmorTexture() -> " + texture);
+        return texture;
     }
 
     private void renderArmorPiece(
@@ -126,9 +138,14 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
             BipedEntityModel<?> model,
             EquipmentSlot slot) {
 
-        if (stack.isEmpty()) return;
+        if (stack.isEmpty()) {
+            System.out.println("DEBUG: Skipping empty armor stack for slot " + slot);
+            return;
+        }
 
         Identifier texture = getArmorTexture(stack, slot);
+        System.out.println("DEBUG: renderArmorPiece() rendering slot " + slot + " with " + texture);
+
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(texture));
         model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
     }
