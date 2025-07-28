@@ -30,8 +30,8 @@ public class NingNongEntityRenderer extends PillagerEntityRenderer {
         // Using unchecked casts to match the expected types
         FeatureRenderer armorFeature = new ArmorFeatureRenderer(
                 (FeatureRendererContext)renderer,
-                innerModel,
-                outerModel,
+                innerModel, // assuming this is an IllagerEntityModel instance
+                outerModel, // assuming this is an IllagerEntityModel instance
                 ctx.getEquipmentRenderer()
         );
 
