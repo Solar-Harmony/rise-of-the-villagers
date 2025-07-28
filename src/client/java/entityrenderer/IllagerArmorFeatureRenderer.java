@@ -25,7 +25,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRenderState, IllagerEntityModel<IllagerEntityRenderState>> {
 
-    private static final Identifier ARMOR_TEXTURE = new Identifier("textures/models/armor/iron_layer_1.png");
+    private static final Identifier ARMOR_TEXTURE = Identifier.of("minecraft", "textures/models/armor/iron_layer_1.png");
 
     private final BipedEntityModel<?> innerArmorModel;
     private final BipedEntityModel<?> outerArmorModel;
@@ -57,12 +57,15 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
             ItemStack itemStack = illager.getEquippedStack(slot);
             if (itemStack.isEmpty()) continue;
 
-            BipedEntityModel<IllagerEntityRenderState> armorModel =
+            BipedEntityModel<?> armorModel =
                     (slot == EquipmentSlot.LEGS) ? innerArmorModel : outerArmorModel;
 
             setArmorPartVisibility(armorModel, slot);
-            renderArmorPiece(context, matrices, vertexConsumers, light, itemStack, armorModel, slot);
+
+            renderArmorPiece(this.getContext(), matrices, vertexConsumers, light, itemStack, armorModel, slot);
         }
+
+
 
         BipedEntityModel<IllagerEntityRenderState> model = slot == EquipmentSlot.LEGS ?
                 this.innerArmorModel : this.outerArmorModel;
@@ -91,7 +94,7 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
         }
     }
 
-    private void setArmorPartVisibility(BipedEntityModel<IllagerEntityRenderState> model, EquipmentSlot slot) {
+    private void setArmorPartVisibility(BipedEntityModel<?> model, EquipmentSlot slot) {
         model.setVisible(false);
         switch (slot) {
             case HEAD:
@@ -117,6 +120,7 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
         }
     }
 
+
     // Helper method to get illager entity from state
     // This would need to be implemented based on your system
     private IllagerEntity getIllagerEntityFromState(IllagerEntityRenderState state) {
@@ -141,17 +145,18 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
         else if (itemName.contains("leather")) material = "leather";
         else if (itemName.contains("chainmail")) material = "chainmail";
 
-        return new Identifier("minecraft", "textures/models/armor/" + material + "_layer_" + layer + ".png");
+        return Identifier.of("minecraft", "textures/models/armor/" + material + "_layer_" + layer + ".png");
+
     }
 
     // Helper method to render armor piece
     private void renderArmorPiece(
-            FeatureRendererContext<IllagerEntityRenderState, ? extends EntityModel<IllagerEntityRenderState>> context,
+            FeatureRendererContext<?, ? extends EntityModel<?>> context,
             MatrixStack matrices,
             VertexConsumerProvider vertexConsumers,
             int light,
             ItemStack stack,
-            BipedEntityModel<IllagerEntityRenderState> model,
+            BipedEntityModel<?> model,
             EquipmentSlot slot) {
 
         if (stack.isEmpty()) return;
@@ -163,4 +168,5 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
         // Render the armor model
         model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
     }
+
 }
