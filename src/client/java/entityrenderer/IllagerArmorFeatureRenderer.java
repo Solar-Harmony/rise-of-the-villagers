@@ -1,9 +1,14 @@
 package entityrenderer;
 
+import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.IllagerEntityModel;
 import net.minecraft.client.render.entity.state.IllagerEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -11,6 +16,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
@@ -46,15 +52,24 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
         IllagerEntity illager = getIllagerEntityFromState(state);
         if (illager == null) return;
 
-        // Render each equipment slot
         for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (slot.getType() != EquipmentSlot.Type.ARMOR) continue;
+            if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) continue;
 
             ItemStack itemStack = illager.getEquippedStack(slot);
-            if (!(itemStack.getItem() instanceof ArmorItem)) continue;
+            if (itemStack.isEmpty()) continue;
 
-            ArmorItem armorItem = (ArmorItem)itemStack.getItem();
-            if (armorItem.getSlotType() != slot) continue;
+            BipedEntityModel<IllagerEntityRenderState> armorModel =
+                    (slot == EquipmentSlot.LEGS) ? innerArmorModel : outerArmorModel;
+
+            setArmorPartVisibility(armorModel, slot);
+            renderArmorPiece(context, matrices, vertexConsumers, light, itemStack, armorModel, slot);
+        }
+
+
+
+
+
+
 
             BipedEntityModel<IllagerEntityRenderState> model = slot == EquipmentSlot.LEGS ?
                     this.innerArmorModel : this.outerArmorModel;
@@ -123,19 +138,28 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
     // Helper method to get armor texture
     private Identifier getArmorTexture(ArmorItem armorItem, EquipmentSlot slot) {
         // This is simplified - normally you would determine the texture based on material and slot
-        return ARMOR_TEXTURE;
+        return IllagerArmorFeatureRenderer.ARMOR_TEXTURE;
     }
 
     // Helper method to render armor piece
-    private void renderArmorPiece(MatrixStack matrices, VertexConsumerProvider vertexConsumers,
-                                  int light, IllagerEntity illager, float limbAngle,
-                                  float limbDistance, BipedEntityModel<IllagerEntityRenderState> model,
-                                  Identifier texture) {
-        // This is simplified - normally you would handle coloring, glint effects, etc.
-        model.render(matrices, vertexConsumers.getBuffer(model.getLayer(texture)),
-                light, ItemRenderer.getItemGlintConsumer(vertexConsumers, model.getLayer(texture),
-                        false, false), 1.0F, 1.0F, 1.0F, 1.0F);
+    private void renderArmorPiece(
+            FeatureRendererContext<IllagerEntityRenderState, ? extends EntityModel<IllagerEntityRenderState>> context,
+            MatrixStack matrices,
+            VertexConsumerProvider vertexConsumers,
+            int light,
+            ItemStack stack,
+            BipedEntityModel<IllagerEntityRenderState> model,
+            EquipmentSlot slot) {
 
+        if (stack.isEmpty()) return;
 
+        // Bind the texture of the armor
+        Identifier texture = getArmorTexture(stack, slot);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(texture));
+
+        // Render the armor model
+        model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);
     }
-}
+
+
+
