@@ -1,6 +1,5 @@
 package entityrenderer;
 
-import net.fabricmc.fabric.api.client.rendering.v1.ArmorRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -13,7 +12,7 @@ import net.minecraft.client.render.entity.model.IllagerEntityModel;
 import net.minecraft.client.render.entity.state.IllagerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.mob.IllagerEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.fabricmc.api.EnvType;
@@ -47,28 +46,31 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
         copyStateToModel(state, this.innerArmorModel);
         copyStateToModel(state, this.outerArmorModel);
 
-        IllagerEntity illager = getIllagerEntityFromState(state);
-        if (illager == null) {
-            System.out.println("DEBUG: IllagerEntity is null in getIllagerEntityFromState().");
-            return;
-        }
-
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) continue;
 
-            ItemStack itemStack = illager.getEquippedStack(slot);
+            ItemStack itemStack = switch (slot) {
+                case HEAD -> state.headArmor;
+                case CHEST -> state.bodyArmor;
+                case LEGS -> state.legArmor;
+                case FEET -> state.feetArmor;
+                default -> ItemStack.EMPTY;
+            };
+
             System.out.println("DEBUG: Checking slot " + slot + " -> " + itemStack);
 
             if (itemStack.isEmpty()) continue;
 
-            BipedEntityModel<?> armorModel =
-                    (slot == EquipmentSlot.LEGS) ? innerArmorModel : outerArmorModel;
-
+            BipedEntityModel<?> armorModel = (slot == EquipmentSlot.LEGS) ? innerArmorModel : outerArmorModel;
             setArmorPartVisibility(armorModel, slot);
 
-            System.out.println("DEBUG: Rendering armor for slot " + slot + " with texture: " + getArmorTexture(itemStack, slot));
             renderArmorPiece(this.rendererContext, matrices, vertexConsumers, light, itemStack, armorModel, slot);
         }
+
+
+
+
+
     }
 
     private void copyStateToModel(IllagerEntityRenderState state, BipedEntityModel<?> model) {
@@ -105,12 +107,6 @@ public class IllagerArmorFeatureRenderer extends FeatureRenderer<IllagerEntityRe
             default:
                 break;
         }
-    }
-
-    private IllagerEntity getIllagerEntityFromState(IllagerEntityRenderState state) {
-        // TODO: Implement this method correctly. For now, debug
-        System.out.println("DEBUG: getIllagerEntityFromState() called - currently returns null.");
-        return null;
     }
 
     private Identifier getArmorTexture(ItemStack stack, EquipmentSlot slot) {
