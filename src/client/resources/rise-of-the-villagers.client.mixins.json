@@ -1,11 +1,14 @@
 {
 	"required": true,
-	"package": "renderer",
+	"package": "mixin",
 	"compatibilityLevel": "JAVA_21",
-	"client": [
-		"PillagerEntityRendererMixin"
+	"mixins": [
+		"PillagerArmorMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
+	},
+	"overwrites": {
+		"requireAnnotations": true
 	}
 }
