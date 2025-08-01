@@ -5,12 +5,16 @@
 
 package renderer;
 
-import dev.imb11.armorful.util.ArmorfulUtil;
+import model.IllagerBipedModel;
+import net.minecraft.client.render.entity.state.EntityRenderState;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
+import util.ArmorfulUtil;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.entity.mob.PillagerEntity;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.NotNull;;
+
 
 public class PillagerBipedRenderer extends IllagerBipedRenderer<PillagerEntity> {
     private static final Identifier PILLAGER = ArmorfulUtil.defaultID("textures/entity/illager/pillager.png");
@@ -20,7 +24,17 @@ public class PillagerBipedRenderer extends IllagerBipedRenderer<PillagerEntity> 
         this.addFeature(new HeldItemFeatureRenderer(this, builder.method_43338()));
     }
 
+    @Override
+    public EntityRenderState createRenderState() {
+        return null;
+    }
+
     public @NotNull Identifier getTextureLocation(PillagerEntity entity) {
         return PILLAGER;
+    }
+
+    @Override
+    public Identifier getTexture(LivingEntityRenderState state) {
+        return null;
     }
 }

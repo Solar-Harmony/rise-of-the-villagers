@@ -5,6 +5,7 @@
 
 package renderer;
 
+import kotlin.jvm.JvmField;
 import org.solarharmony.RiseOfTheVillagersClient;
 import model.IllagerArmorModel;
 import model.IllagerBipedModel;
@@ -27,10 +28,10 @@ import net.minecraft.util.Hand;
 
 public abstract class IllagerBipedRenderer<T extends IllagerEntity> extends MobEntityRenderer<T, IllagerBipedModel<T>> {
     public IllagerBipedRenderer(EntityRendererFactory.Context builder) {
-        super(builder, new IllagerBipedModel(builder.getPart(RiseOfTheVillagersClient.ILLAGER_BIPED)), 0.5F);
+        super(builder, new IllagerBipedModel(builder.getPart(RiseOfTheVillagersClient.getIllagerBiped())), 0.5F);
         this.addFeature(new HeadFeatureRenderer(this, builder.getEntityModels(), builder.method_43338()));
         this.addFeature(new ElytraFeatureRenderer(this, builder.getEntityModels()));
-        this.addFeature(new ArmorFeatureRenderer(this, new IllagerArmorModel(builder.getPart(RiseOfTheVillagersClient.ILLAGER_BIPED_INNER_ARMOR)), new IllagerArmorModel(builder.getPart(ArmorfulClient.ILLAGER_BIPED_OUTER_ARMOR)), MinecraftClient.getInstance().getBakedModelManager()));
+        this.addFeature(new ArmorFeatureRenderer(this, new IllagerArmorModel(builder.getPart(RiseOfTheVillagersClient.getIllagerBipedInnerArmor())), new IllagerArmorModel(builder.getPart(RiseOfTheVillagersClient.getIllagerBipedOuterArmor())), MinecraftClient.getInstance().getBakedModelManager()));
     }
 
     protected void scale(T entity, MatrixStack matrices, float amount) {

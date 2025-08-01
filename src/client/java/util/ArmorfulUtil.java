@@ -1,7 +1,7 @@
 package util;
 
 import com.google.common.collect.Maps;
-import dev.imb11.armorful.loot.ArmorfulLootTables;
+import loot.ArmorfulLootTables;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
